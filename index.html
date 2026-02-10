@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To do App Program</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1 class="title">Calculator App</h1>
+    <div class="app">
+      <div class="inputCon">
+        <input readonly="true">
+      </div>
+      <div class="keys">
+        <button  id="clearAll" ">C</button>
+        <button  class="operate" >÷</button>
+        <button  class="operate" >&times;</button>
+        <button  id="clear"  >CE</button>
+        <button  class="number" >7</button>
+        <button  class="number" >8</button>
+        <button  class="number" >9</button>
+        <button  class="operate" >-</button>
+        <button  class="number" >4</button>
+        <button  class="number" >5</button>
+        <button  class="number" >6</button>
+        <button  class="operate" >+</button>
+        <button  class="number" >1</button>
+        <button  class="number" >2</button>
+        <button  class="number" >3</button>
+        <button  id="equate" >=</button>
+        <button  id="percent" >%</button>
+        <button  class="number" >0</button>
+        <button  class="number" >.</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    let input = document.querySelector('input');
+    let number = document.querySelectorAll('.number');
+    let operate = document.querySelectorAll('.operate');
+    let equate = document.getElementById('equate');
+    let clear = document.getElementById('clear');
+    let clearAll = document.getElementById('clearAll');
+    let percent = document.getElementById('percent');
+    
+    let doneState = false;
+    
+    Array.from(number).forEach(num =>{
+      num.addEventListener('click', ()=>{
+        let string = input.value;
+        let lastCha = string[string.length - 1]  //substring(0, sring.length - 1) + num.innerHTML;
+        if(doneState === false){
+          input.value += num.innerHTML;
+        }else if(doneState === true && lastCha === "+" || lastCha === "-" || lastCha === "×" || lastCha === "÷"){
+          doneState = false;
+          input.value += num.innerHTML;
+        }else{
+          doneState = false;
+          input.value = "";
+          input.value += num.innerHTML;
+        }
+      })
+    })
+    
+    Array.from(operate).forEach(opt =>{
+      opt.addEventListener('click', ()=>{
+        let string = input.value;
+        let lastCha = string[string.length - 1]  //substring(0, sring.length - 1) + num.innerHTML;
+        //console.log(opt)
+        if(lastCha === "-" && input.value.length === 1){
+          
+        }else if(lastCha === "+" || lastCha === "-" || lastCha === "×" || lastCha === "÷"){
+          let newString = string.substring(0, string.length - 1) + opt.innerHTML;
+          input.value = newString;
+        }else if(input.value.length === 0 && opt.textContent === "-"){
+           input.value += opt.innerHTML;
+          }else if(input.value.length === 0){
+           
+          }
+          else{
+            input.value += opt.innerHTML;
+        }
+      })
+    })
+
+    percent.addEventListener('click', ()=>{
+      if (input.value.length < 1) {
+        
+      } else {
+        input.value += percent.textContent;
+      }
+    })
+    
+    equate.addEventListener('click', ()=>{
+      let getString = input.value;
+
+      
+      let percent = getString.replace(/[0-9]|\.|\-|\+|\×|\÷/g, "").split("");
+
+      let nums = getString.split(/\-|\+|\×|\÷|\%/g);
+      let perIndex = getString.indexOf('%');
+
+      if(perIndex > -1){
+        while(nums.indexOf(getString[perIndex + 1]) != -1){
+          getString = getString.split('');
+          getString.splice(perIndex, 1, "÷100×").join('')
+          getString = getString.join('')
+          perIndex = getString.indexOf('%') === -1 ? (getString.indexOf('%') - 1) : getString.indexOf('%');
+          nums = getString.split(/\-|\+|\×|\÷|\%/g);
+
+          // console.log(getString)
+          // console.log( getString.charAt(perIndex))
+          // console.log(perIndex)
+          // console.log(nums)
+          // console.log(nums.indexOf(getString[perIndex + 1]))
+          // console.log(nums.indexOf(getString[perIndex + 1]) === 0)
+        }
+        console.log(getString.split('%').join("÷100"))
+        console.log(getString[perIndex + 1])
+        getString = getString.split('%').join("÷100")
+        // return
+      }
+
+      let numbers = getString.split(/\-|\+|\×|\÷|\%/g);
+      let numSpace = numbers.indexOf('');
+      
+      while (numSpace != -1) {
+        numbers.splice(numSpace, 1);
+        numSpace = numbers.indexOf('');
+      }
+
+      if(getString.indexOf("-") === 0){
+        numbers.unshift('0')
+      }
+      
+      let operators = getString.replace(/[0-9]|\.|\%/g, "").split("");
+      //console.log(eval(6/100)) percent
+
+      let lastChar = getString[getString.length - 1]
+
+      if(operators.indexOf(lastChar) > -1){
+        return
+      }else if(getString.trim().length < 1){
+        return
+      }
+      
+      let divide = operators.indexOf("÷")
+      while(divide != -1){
+        numbers.splice(divide, 2, parseFloat(numbers[divide]) /  parseFloat(numbers[divide + 1]));
+        operators.splice(divide, 1)
+        divide = operators.indexOf("÷")
+      }
+
+      let subtract = operators.indexOf("-")
+      while(subtract != -1){
+        numbers.splice(subtract, 2, parseFloat(numbers[subtract]) - parseFloat(numbers[subtract + 1]));
+        operators.splice(subtract, 1)
+        subtract = operators.indexOf("-")
+      }
+
+      let add = operators.indexOf("+")
+      while(add != -1){
+        numbers.splice(add, 2, parseFloat(numbers[add]) + parseFloat(numbers[add + 1]));
+        operators.splice(add, 1)
+        add = operators.indexOf("+")
+      }
+      
+      
+      
+      let multiply = operators.indexOf("×")
+      while(multiply != -1){
+        numbers.splice(multiply, 2, parseFloat(numbers[multiply]) * parseFloat(numbers[multiply + 1]));
+        operators.splice(multiply, 1)
+        multiply = operators.indexOf("×")
+      }
+      
+      
+      
+      
+      input.value = numbers[0]
+      doneState = true;
+    })
+    
+    clearAll.addEventListener('click', ()=>{
+      input.value = "";
+    })
+    
+    clear.addEventListener('click', ()=>{
+    if(doneState === true){
+      input.value = "";
+    }else{
+      let string = input.value;
+      let newString = string.substring(0, string.length - 1);
+      input.value = newString;
+    }
+    }) 
+    
+    
+    
+    
+  </script>
+</body>
+</html>
