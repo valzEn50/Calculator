@@ -86,9 +86,13 @@
     })
 
     percent.addEventListener('click', ()=>{
+      let string = input.value;
+      let lastCha = string[string.length - 1];
       if (input.value.length < 1) {
         
-      } else {
+      }else if(lastCha === "+" || lastCha === "-" || lastCha === "×" || lastCha === "÷" || lastCha === "%"){
+        
+      }else {
         input.value += percent.textContent;
       }
     })
